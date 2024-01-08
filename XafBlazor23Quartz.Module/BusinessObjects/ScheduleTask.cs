@@ -13,9 +13,9 @@ namespace XafBlazorQuartzHostedService.Module.BusinessObjects
 {
     [DefaultClassOptions()]
     [ModelDefault("IsCloneable", "true")]
-    public class ScheduleBase : BaseObject
+    public class ScheduleTask : BaseObject
     { // Inherit from a different class to provide a custom primary key, concurrency and deletion behavior, etc. (https://documentation.devexpress.com/eXpressAppFramework/CustomDocument113146.aspx).
-        public ScheduleBase(Session session)
+        public ScheduleTask(Session session)
             : base(session)
         {
         }
@@ -31,7 +31,7 @@ namespace XafBlazorQuartzHostedService.Module.BusinessObjects
         DateTime executeAt;
         TriggerType triggerType;
         bool enable;
-        JobType jobType;
+  
         bool everyMonth;
         int month;
         bool everyDay;
@@ -452,11 +452,11 @@ namespace XafBlazorQuartzHostedService.Module.BusinessObjects
         //    set => SetPropertyValue(nameof(LastUpdate), ref lastUpdate, value);
         //}
         [Association("ScheduleBase-ScheduleExecutionDetails")]
-        public XPCollection<ScheduleExecutionDetail> ScheduleExecutionDetails
+        public XPCollection<Log> Logs
         {
             get
             {
-                return GetCollection<ScheduleExecutionDetail>(nameof(ScheduleExecutionDetails));
+                return GetCollection<Log>(nameof(Logs));
             }
         }
         
@@ -465,11 +465,7 @@ namespace XafBlazorQuartzHostedService.Module.BusinessObjects
             get => enable;
             set => SetPropertyValue(nameof(Enable), ref enable, value);
         }
-        public JobType JobType
-        {
-            get => jobType;
-            set => SetPropertyValue(nameof(JobType), ref jobType, value);
-        }
+
 
     }
 }

@@ -20,11 +20,11 @@ namespace XafBlazor23Quartz.Module.BusinessObjects
     //[DefaultListViewOptions(MasterDetailMode.ListViewOnly, false, NewItemRowPosition.None)]
     //[Persistent("DatabaseTableName")]
     // Specify more UI options using a declarative approach (https://documentation.devexpress.com/#eXpressAppFramework/CustomDocument112701).
-    public class JobType : BaseObject
+    public class Sql : BaseObject
     { // Inherit from a different class to provide a custom primary key, concurrency and deletion behavior, etc. (https://documentation.devexpress.com/eXpressAppFramework/CustomDocument113146.aspx).
         // Use CodeRush to create XPO classes and properties with a few keystrokes.
         // https://docs.devexpress.com/CodeRushForRoslyn/118557
-        public JobType(Session session)
+        public Sql(Session session)
             : base(session)
         {
         }
@@ -34,7 +34,7 @@ namespace XafBlazor23Quartz.Module.BusinessObjects
             // Place your initialization code here (https://documentation.devexpress.com/eXpressAppFramework/CustomDocument112834.aspx).
         }
 
-        string typeName;
+        string queryString;
         string name;
 
         [Size(SizeAttribute.DefaultStringMappingFieldSize)]
@@ -45,10 +45,10 @@ namespace XafBlazor23Quartz.Module.BusinessObjects
         }
         
         [Size(SizeAttribute.DefaultStringMappingFieldSize)]
-        public string TypeName
+        public string QueryString
         {
-            get => typeName;
-            set => SetPropertyValue(nameof(TypeName), ref typeName, value);
+            get => queryString;
+            set => SetPropertyValue(nameof(QueryString), ref queryString, value);
         }
     }
 }

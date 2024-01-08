@@ -44,12 +44,12 @@ namespace XafBlazorQuartzHostedService.Module.Blazor.Quartz
             Scheduler.JobFactory = _jobFactory;
 
             IObjectSpace Os;
-            IEnumerable<ScheduleBase> Schedules = null;
+            IEnumerable<ScheduleTask> Schedules = null;
             try
             {
                 Os = _objectSpaceService.GetObjectSpace();
 
-                Schedules = Os.CreateCollection(typeof(ScheduleBase)).Cast<ScheduleBase>();
+                Schedules = Os.CreateCollection(typeof(ScheduleTask)).Cast<ScheduleTask>();
                 //HACK get the count to evaluate the property
                 var Count = Schedules.Count();
             }
@@ -63,28 +63,18 @@ namespace XafBlazorQuartzHostedService.Module.Blazor.Quartz
             foreach (var item in Schedules)
             {
 
-                if(item.JobType==null)
-                    continue;
+
 
                 if (!item.Enable)
                     continue;
 
 
                 JobSchedule jobSchedule = null;
-                if (item.JobType.TypeName=="Job1")
-                {
-                     jobSchedule = new JobSchedule(
-                   jobType: typeof(Job1),
-                   cronExpression: item.Expression,
-                   triggerType:item.TriggerType);
-                }
-                if (item.JobType.TypeName == "Job2")
-                {
-                    jobSchedule = new JobSchedule(
-                   jobType: typeof(Job2),
-                   cronExpression: item.Expression,
-                   triggerType: item.TriggerType);
-                }
+                jobSchedule = new JobSchedule(
+                 jobType: typeof(XafJob),
+                 cronExpression: item.Expression,
+                 triggerType: item.TriggerType);
+
 
 
                 IDictionary<string, object> map = new Dictionary<string, object>()
@@ -105,7 +95,7 @@ namespace XafBlazorQuartzHostedService.Module.Blazor.Quartz
                 Started = true;
             }
 
-      
+
 
             await Scheduler.Start(cancellationToken);
         }
@@ -139,7 +129,7 @@ namespace XafBlazorQuartzHostedService.Module.Blazor.Quartz
                    .WithCronSchedule(schedule.CronExpression)
                    .WithDescription(schedule.CronExpression)
                    .Build();
-                  
+
                 case TriggerType.DateTrigger:
                     return TriggerBuilder
                    .Create()
@@ -151,7 +141,7 @@ namespace XafBlazorQuartzHostedService.Module.Blazor.Quartz
 
             }
             return null;
-           
+
         }
     }
 }

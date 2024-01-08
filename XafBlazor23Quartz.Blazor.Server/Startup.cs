@@ -16,6 +16,7 @@ using XafBlazor23Quartz.Blazor.Server.Quartz.ObjectSpaceService;
 using XafBlazor23Quartz.Blazor.Server.Quartz.Quartz;
 using XafBlazorQuartzHostedService.Module.Blazor.Quartz;
 using XafBlazorQuartzHostedService.Module.BusinessObjects;
+using XafBlazor23Quartz.Module.BusinessObjects;
 
 namespace XafBlazor23Quartz.Blazor.Server;
 
@@ -99,16 +100,16 @@ public class Startup {
         services.AddSingleton<IJobFactory, SingletonJobFactory>();
         services.AddSingleton<ISchedulerFactory, StdSchedulerFactory>();
 
-        //TODO egister types for the objectspace, this is needed for the job to be able to create/read objects
+        //TODO register types for the objectspace, this is needed for the job to be able to create/read objects
         List<Type> types = new List<Type>();
-        types.Add(typeof(DomainObject1));
-        types.Add(typeof(ScheduleBase));
+        types.Add(typeof(Sql));
+        types.Add(typeof(Connection));
+        types.Add(typeof(ScheduleTask));
         services.AddSingleton(typeof(IQuartzObjectSpaceService), new QuartzObjectSpaceService(types, Configuration.GetConnectionString("ConnectionString")));
 
         ////TODO register Jobs
         services.AddSingleton<XafJob>();
-        services.AddSingleton<Job1>();
-        services.AddSingleton<Job2>();
+       
         //services.AddSingleton(new JobSchedule(
         //    jobType: typeof(XafJob),
         //    cronExpression: "0/5 * * * * ?")); // run every 5 seconds

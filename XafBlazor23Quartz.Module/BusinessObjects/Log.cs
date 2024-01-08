@@ -15,9 +15,9 @@ using DevExpress.Persistent.Validation;
 namespace XafBlazorQuartzHostedService.Module.BusinessObjects
 {
    
-    public class ScheduleExecutionDetail : BaseObject
+    public class Log : BaseObject
     { // Inherit from a different class to provide a custom primary key, concurrency and deletion behavior, etc. (https://documentation.devexpress.com/eXpressAppFramework/CustomDocument113146.aspx).
-        public ScheduleExecutionDetail(Session session)
+        public Log(Session session)
             : base(session)
         {
         }
@@ -27,7 +27,7 @@ namespace XafBlazorQuartzHostedService.Module.BusinessObjects
             // Place your initialization code here (https://documentation.devexpress.com/eXpressAppFramework/CustomDocument112834.aspx).
         }
 
-        ScheduleBase scheduleBase;
+        ScheduleTask scheduleBase;
         string log;
         DateTime date;
 
@@ -38,14 +38,14 @@ namespace XafBlazorQuartzHostedService.Module.BusinessObjects
         }
 
         [Size(SizeAttribute.DefaultStringMappingFieldSize)]
-        public string Log
+        public string LogText
         {
             get => log;
-            set => SetPropertyValue(nameof(Log), ref log, value);
+            set => SetPropertyValue(nameof(LogText), ref log, value);
         }
         
         [Association("ScheduleBase-ScheduleExecutionDetails")]
-        public ScheduleBase ScheduleBase
+        public ScheduleTask ScheduleBase
         {
             get => scheduleBase;
             set => SetPropertyValue(nameof(ScheduleBase), ref scheduleBase, value);

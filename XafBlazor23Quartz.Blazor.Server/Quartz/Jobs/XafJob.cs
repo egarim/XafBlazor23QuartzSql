@@ -39,7 +39,7 @@ namespace XafBlazor23Quartz.Blazor.Server.Quartz.Jobs
 
 
             XpoTypesInfoHelper.GetXpoTypeInfoSource();
-            XafTypesInfo.Instance.RegisterEntity(typeof(DomainObject1));
+            //XafTypesInfo.Instance.RegisterEntity(typeof(DomainObject1));
 
 
 
@@ -48,8 +48,8 @@ namespace XafBlazor23Quartz.Blazor.Server.Quartz.Jobs
             IObjectSpace objectSpace = osProvider.CreateObjectSpace();
 
 
-            var Schedule = objectSpace.GetObjectsQuery<ScheduleBase>().FirstOrDefault(sc => sc.Oid == Oid);
-            var ExecutionDetail = objectSpace.CreateObject<ScheduleExecutionDetail>();
+            var Schedule = objectSpace.GetObjectsQuery<ScheduleTask>().FirstOrDefault(sc => sc.Oid == Oid);
+            var ExecutionDetail = objectSpace.CreateObject<Log>();
             try
             {
 
@@ -57,19 +57,19 @@ namespace XafBlazor23Quartz.Blazor.Server.Quartz.Jobs
 
 
 
-                var Instance = objectSpace.CreateObject<DomainObject1>();
-                Instance.Name = Oid.ToString() + DateTime.Now.ToString();
+                //var Instance = objectSpace.CreateObject<DomainObject1>();
+                //Instance.Name = Oid.ToString() + DateTime.Now.ToString();
                 ExecutionDetail.Date = DateTime.UtcNow;
-                ExecutionDetail.Log = "Success";
+                ExecutionDetail.LogText = "Success";
 
 
             }
             catch (Exception ex)
             {
 
-                ExecutionDetail.Log = ex.Message;
+                ExecutionDetail.LogText = ex.Message;
             }
-            Schedule.ScheduleExecutionDetails.Add(ExecutionDetail);
+            Schedule.Logs.Add(ExecutionDetail);
             if (objectSpace.IsModified)
                 objectSpace.CommitChanges();
 
@@ -83,22 +83,22 @@ namespace XafBlazor23Quartz.Blazor.Server.Quartz.Jobs
         {
 
 
-            IDataLayer dl = XpoDefault.GetDataLayer(cnx, DevExpress.Xpo.DB.AutoCreateOption.SchemaAlreadyExists);
-            using (Session session = new Session(dl))
-            {
-                System.Reflection.Assembly[] assemblies = new System.Reflection.Assembly[] {
-                       typeof(DomainObject1).Assembly,
+            //IDataLayer dl = XpoDefault.GetDataLayer(cnx, DevExpress.Xpo.DB.AutoCreateOption.SchemaAlreadyExists);
+            //using (Session session = new Session(dl))
+            //{
+            //    System.Reflection.Assembly[] assemblies = new System.Reflection.Assembly[] {
+            //           typeof(DomainObject1).Assembly,
 
-                   };
-                session.UpdateSchema(assemblies);
-                session.CreateObjectTypeRecords(assemblies);
-            }
-            UnitOfWork UoW = new UnitOfWork(dl);
+            //       };
+            //    session.UpdateSchema(assemblies);
+            //    session.CreateObjectTypeRecords(assemblies);
+            //}
+            //UnitOfWork UoW = new UnitOfWork(dl);
 
-            DomainObject1 domainObject1 = new DomainObject1(UoW);
-            domainObject1.Name = DateTime.Now.ToString();
+            //DomainObject1 domainObject1 = new DomainObject1(UoW);
+            //domainObject1.Name = DateTime.Now.ToString();
 
-            UoW.CommitChanges();
+            //UoW.CommitChanges();
         }
     }
 }
