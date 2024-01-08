@@ -47,7 +47,7 @@ namespace XafBlazorQuartzHostedService.Module.BusinessObjects
         public string LogText
         {
             get => logText;
-            set => SetPropertyValue(nameof(logText), ref logText, value);
+            set => SetPropertyValue(nameof(LogText), ref logText, value);
         }
         [ModelDefault("AllowEdit","false")]
         public Result Result
