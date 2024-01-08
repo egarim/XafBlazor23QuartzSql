@@ -44,7 +44,7 @@ namespace XafBlazor23Quartz.Module.BusinessObjects
             set => SetPropertyValue(nameof(Name), ref name, value);
         }
         
-        [Size(SizeAttribute.DefaultStringMappingFieldSize)]
+        [Size(SizeAttribute.Unlimited)]
         public string QueryString
         {
             get => queryString;

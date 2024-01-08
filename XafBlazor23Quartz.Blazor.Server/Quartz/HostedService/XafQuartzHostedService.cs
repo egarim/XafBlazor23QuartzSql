@@ -86,8 +86,8 @@ namespace XafBlazorQuartzHostedService.Module.Blazor.Quartz
                 };
                 var DataMap = new JobDataMap(map);
 
-                var job = CreateJob(jobSchedule, DataMap);
-                var trigger = CreateTrigger(jobSchedule);
+                var job = CreateJob(jobSchedule, DataMap, item.Oid);
+                var trigger = CreateTrigger(jobSchedule, item.Oid);
 
 
 
@@ -106,26 +106,26 @@ namespace XafBlazorQuartzHostedService.Module.Blazor.Quartz
             Started = false;
         }
 
-        private static IJobDetail CreateJob(JobSchedule schedule, JobDataMap DataMap)
+        private static IJobDetail CreateJob(JobSchedule schedule, JobDataMap DataMap,Guid Identity)
         {
             var jobType = schedule.JobType;
             return JobBuilder
                 .Create(jobType)
-                .WithIdentity(jobType.FullName)
+                .WithIdentity(Identity.ToString())
                 .SetJobData(DataMap)
                 .WithDescription(jobType.Name)
                 .Build();
         }
 
 
-        private static ITrigger CreateTrigger(JobSchedule schedule)
+        private static ITrigger CreateTrigger(JobSchedule schedule,Guid Identity)
         {
             switch (schedule.TriggerType)
             {
                 case TriggerType.CronExpression:
                     return TriggerBuilder
                    .Create()
-                   .WithIdentity($"{schedule.JobType.FullName}.trigger")
+                   .WithIdentity(Identity.ToString())
                    .WithCronSchedule(schedule.CronExpression)
                    .WithDescription(schedule.CronExpression)
                    .Build();
@@ -133,9 +133,9 @@ namespace XafBlazorQuartzHostedService.Module.Blazor.Quartz
                 case TriggerType.DateTrigger:
                     return TriggerBuilder
                    .Create()
-                   .WithIdentity($"{schedule.JobType.FullName}.trigger")
+                   .WithIdentity(Identity.ToString())
                    .StartAt(schedule.StartTime)
-                   .WithDescription(schedule.CronExpression)
+                   .WithDescription(schedule.StartTime.ToString())
                    .Build();
 
 

@@ -9,11 +9,13 @@ using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using XafBlazor23Quartz.Module.BusinessObjects;
 using XafBlazorQuartzHostedService.Module.BusinessObjects;
 
 namespace XafBlazor23Quartz.Blazor.Server.Quartz.Jobs
 {
-    [DisallowConcurrentExecution]
+    //HACK we need concurrent executions
+    //[DisallowConcurrentExecution]
     public class XafJob : IJob
     {
 
@@ -28,45 +30,47 @@ namespace XafBlazor23Quartz.Blazor.Server.Quartz.Jobs
 
         public virtual Task Execute(IJobExecutionContext context)
         {
-            //XpoDirect();
+            
 
 
             var dataMap = context.JobDetail.JobDataMap;
             var Oid = dataMap.GetGuid("Oid");
             cnx = dataMap.GetString("cnx");
-            var Osp = dataMap.Get("Osp") as IObjectSpaceProvider;
+           
 
 
 
             XpoTypesInfoHelper.GetXpoTypeInfoSource();
-            //XafTypesInfo.Instance.RegisterEntity(typeof(DomainObject1));
-
-
+            XafTypesInfo.Instance.RegisterEntity(typeof(ScheduleTask));
+            XafTypesInfo.Instance.RegisterEntity(typeof(Sql));
+            XafTypesInfo.Instance.RegisterEntity(typeof(Log));
+            XafTypesInfo.Instance.RegisterEntity(typeof(Connection));
 
             cnx = XpoDefault.GetConnectionPoolString(cnx);
             XPObjectSpaceProvider osProvider = new XPObjectSpaceProvider(cnx, null);
+           
             IObjectSpace objectSpace = osProvider.CreateObjectSpace();
 
 
             var Schedule = objectSpace.GetObjectsQuery<ScheduleTask>().FirstOrDefault(sc => sc.Oid == Oid);
             var ExecutionDetail = objectSpace.CreateObject<Log>();
+            ExecutionDetail.Date = DateTime.UtcNow;
             try
             {
+             
 
-
-
-
-
-                //var Instance = objectSpace.CreateObject<DomainObject1>();
-                //Instance.Name = Oid.ToString() + DateTime.Now.ToString();
-                ExecutionDetail.Date = DateTime.UtcNow;
+                var TargetDatabase = XpoDefault.GetConnectionPoolString(Schedule.Connection.ConnectionString);
+                var TargetDal= XpoDefault.GetDataLayer(TargetDatabase, DevExpress.Xpo.DB.AutoCreateOption.SchemaAlreadyExists);
+                UnitOfWork unitOfWork=new UnitOfWork(TargetDal);
+                unitOfWork.ExecuteNonQuery(Schedule.Sql.QueryString);
+                ExecutionDetail.Result = Result.Success;
                 ExecutionDetail.LogText = "Success";
 
 
             }
             catch (Exception ex)
             {
-
+                ExecutionDetail.Result = Result.Error;
                 ExecutionDetail.LogText = ex.Message;
             }
             Schedule.Logs.Add(ExecutionDetail);
@@ -75,31 +79,11 @@ namespace XafBlazor23Quartz.Blazor.Server.Quartz.Jobs
 
 
 
-            _logger.LogInformation("Hello world!");
+
             return Task.CompletedTask;
         }
 
-        private void XpoDirect()
-        {
-
-
-            //IDataLayer dl = XpoDefault.GetDataLayer(cnx, DevExpress.Xpo.DB.AutoCreateOption.SchemaAlreadyExists);
-            //using (Session session = new Session(dl))
-            //{
-            //    System.Reflection.Assembly[] assemblies = new System.Reflection.Assembly[] {
-            //           typeof(DomainObject1).Assembly,
-
-            //       };
-            //    session.UpdateSchema(assemblies);
-            //    session.CreateObjectTypeRecords(assemblies);
-            //}
-            //UnitOfWork UoW = new UnitOfWork(dl);
-
-            //DomainObject1 domainObject1 = new DomainObject1(UoW);
-            //domainObject1.Name = DateTime.Now.ToString();
-
-            //UoW.CommitChanges();
-        }
+    
     }
 }
 
