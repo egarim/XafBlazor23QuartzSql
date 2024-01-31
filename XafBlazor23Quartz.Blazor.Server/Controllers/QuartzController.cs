@@ -34,17 +34,17 @@ namespace XafBlazorQuartz2.Module.Blazor.Controllers
             InitializeComponent();
 
 
-            RestartScheduler = new SimpleAction(this, nameof(RestartScheduler), PredefinedCategory.View) { Caption = "Restart Scheduler" };
-            RestartScheduler.Execute += RestartScheduler_Execute;
-
-
             SimpleAction StartScheduler = new SimpleAction(this, nameof(StartScheduler), PredefinedCategory.View) { Caption = "Start Scheduler" };
             StartScheduler.Execute += StartScheduler_Execute;
+            StartScheduler.TargetObjectType = typeof(ScheduleTask);
 
+            RestartScheduler = new SimpleAction(this, nameof(RestartScheduler), PredefinedCategory.View) { Caption = "Restart Scheduler" };
+            RestartScheduler.Execute += RestartScheduler_Execute;
+            RestartScheduler.TargetObjectType = typeof(ScheduleTask);
 
             SimpleAction StopScheduler = new SimpleAction(this, nameof(StopScheduler), PredefinedCategory.View) { Caption = "Stop Scheduler" };
             StopScheduler.Execute += StopScheduler_Execute;
-
+            StopScheduler.TargetObjectType = typeof(ScheduleTask);
 
 
         }

@@ -1,11 +1,33 @@
-﻿<?xml version="1.0" ?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Application Title="XafBlazor23Quartz">
   <BOModel>
     <Class Name="DevExpress.Persistent.BaseImpl.PermissionPolicy.PermissionPolicyUser" Caption="Base User" />
+    <Class Name="XafBlazorQuartzHostedService.Module.BusinessObjects.ScheduleTask" DefaultDetailViewImage="BO_Appointment" DefaultListViewImage="BO_Appointment" ImageName="BO_Appointment" />
   </BOModel>
+  <NavigationItems>
+    <Items>
+      <Item Id="@dc8ae017-90bc-49ae-a64d-87f046130eeb" Caption="SQL Management" ImageName="BO_Folder" IsNewNode="True">
+        <Items IsNewNode="True">
+          <Item Id="ScheduleTask_ListView" ViewId="ScheduleTask_ListView" ObjectKey="" ImageName="BO_Appointment" IsNewNode="True" />
+        </Items>
+      </Item>
+      <Item Id="Default" Caption="User Management">
+        <Items>
+          <Item Id="Connection_ListView" Removed="True" />
+          <Item Id="Log_ListView" Removed="True" />
+          <Item Id="ScheduleTask_ListView" ImageName="BO_Appointment" Removed="True" />
+          <Item Id="Sql_ListView" Removed="True" />
+        </Items>
+      </Item>
+    </Items>
+  </NavigationItems>
   <Options>
     <LayoutManagerOptions RequiredFieldMark="*" />
   </Options>
+  <SchemaModules>
+    <SchemaModule Name="CloneObjectModule" Version="23.2.3.0" IsNewNode="True" />
+    <SchemaModule Name="SystemModule" Version="23.2.3.0" IsNewNode="True" />
+  </SchemaModules>
   <Views>
     <ListView Id="ApplicationUser_ListView" Caption="Users" />
   </Views>
