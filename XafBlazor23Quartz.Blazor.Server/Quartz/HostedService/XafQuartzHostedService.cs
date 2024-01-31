@@ -1,4 +1,5 @@
 ﻿using DevExpress.ExpressApp;
+using DevExpress.ExpressApp.Model;
 using DevExpress.ExpressApp.Xpo;
 using DevExpress.Xpo;
 using Microsoft.Extensions.Hosting;
@@ -7,6 +8,7 @@ using Quartz.Spi;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using XafBlazor23Quartz.Blazor.Server.Quartz.Jobs;
@@ -40,15 +42,16 @@ namespace XafBlazorQuartzHostedService.Module.Blazor.Quartz
         public bool Started { get; set; }
         public async Task StartAsync(CancellationToken cancellationToken)
         {
+             StringBuilder Log=new StringBuilder();
             Scheduler = await _schedulerFactory.GetScheduler(cancellationToken);
             Scheduler.JobFactory = _jobFactory;
-
+            Log.AppendLine("Scheduler Started");
             IObjectSpace Os;
             IEnumerable<ScheduleTask> Schedules = null;
             try
             {
                 Os = _objectSpaceService.GetObjectSpace();
-
+                Log.AppendLine("ObjectSpace Created");
                 Schedules = Os.CreateCollection(typeof(ScheduleTask)).Cast<ScheduleTask>();
                 //HACK get the count to evaluate the property
                 var Count = Schedules.Count();
@@ -75,7 +78,7 @@ namespace XafBlazorQuartzHostedService.Module.Blazor.Quartz
                  cronExpression: item.Expression,
                  triggerType: item.TriggerType);
 
-
+             
 
                 IDictionary<string, object> map = new Dictionary<string, object>()
                 {
@@ -92,10 +95,14 @@ namespace XafBlazorQuartzHostedService.Module.Blazor.Quartz
 
 
                 await Scheduler.ScheduleJob(job, trigger, cancellationToken);
-                Started = true;
+                Log.AppendLine($"Job {item.Name} schedule ({item.ExpressionDescription}) ");
+
             }
-
-
+            var log=Os.CreateObject<SchedulerLog>();
+            log.Date = DateTime.UtcNow;
+            log.Log = Log.ToString();   
+            Os.CommitChanges();
+            Started = true;
 
             await Scheduler.Start(cancellationToken);
         }
