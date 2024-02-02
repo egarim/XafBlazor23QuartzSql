@@ -25,26 +25,28 @@ using XafBlazorQuartzHostedService.Module.BusinessObjects;
 namespace XafBlazorQuartz2.Module.Blazor.Controllers
 {
     // For more typical usage scenarios, be sure to check out https://documentation.devexpress.com/eXpressAppFramework/clsDevExpressExpressAppViewControllertopic.aspx.
-    public partial class QuartzController : ViewController
+    public partial class QuartzController : ViewController<ListView>
     {
         SimpleAction RestartScheduler;
+        SimpleAction startScheduler;
+        SimpleAction stopScheduler;
 
         public QuartzController()
         {
             InitializeComponent();
+            TargetObjectType = typeof(ScheduleTask);
 
-
-            SimpleAction StartScheduler = new SimpleAction(this, nameof(StartScheduler), PredefinedCategory.View) { Caption = "Start Scheduler" };
-            StartScheduler.Execute += StartScheduler_Execute;
-            StartScheduler.TargetObjectType = typeof(ScheduleTask);
+            startScheduler = new SimpleAction(this, nameof(startScheduler), PredefinedCategory.View) { Caption = "Start Scheduler" };
+            startScheduler.Execute += StartScheduler_Execute;
+            startScheduler.TargetObjectType = typeof(ScheduleTask);
 
             RestartScheduler = new SimpleAction(this, nameof(RestartScheduler), PredefinedCategory.View) { Caption = "Restart Scheduler" };
             RestartScheduler.Execute += RestartScheduler_Execute;
             RestartScheduler.TargetObjectType = typeof(ScheduleTask);
 
-            SimpleAction StopScheduler = new SimpleAction(this, nameof(StopScheduler), PredefinedCategory.View) { Caption = "Stop Scheduler" };
-            StopScheduler.Execute += StopScheduler_Execute;
-            StopScheduler.TargetObjectType = typeof(ScheduleTask);
+            stopScheduler = new SimpleAction(this, nameof(stopScheduler), PredefinedCategory.View) { Caption = "Stop Scheduler" };
+            stopScheduler.Execute += StopScheduler_Execute;
+            stopScheduler.TargetObjectType = typeof(ScheduleTask);
 
 
         }
@@ -55,6 +57,10 @@ namespace XafBlazorQuartz2.Module.Blazor.Controllers
          
             await Service.StopAsync(new System.Threading.CancellationToken());
             await Service.StartAsync(new System.Threading.CancellationToken());
+
+            RestartScheduler.Enabled.SetItemValue("Visible", Service.Started);
+            startScheduler.Enabled.SetItemValue("Visible", !Service.Started);
+            stopScheduler.Enabled.SetItemValue("Visible", Service.Started);
         }
 
         private async void StopScheduler_Execute(object sender, SimpleActionExecuteEventArgs e)
@@ -63,6 +69,10 @@ namespace XafBlazorQuartz2.Module.Blazor.Controllers
             var Service = serviceProvider.GetService<XafQuartzHostedService>();
             if(Service.Started)
                 await Service.StopAsync(new System.Threading.CancellationToken());
+
+            RestartScheduler.Enabled.SetItemValue("Visible", Service.Started);
+            startScheduler.Enabled.SetItemValue("Visible", !Service.Started);
+            stopScheduler.Enabled.SetItemValue("Visible", Service.Started);
         }
         private async void StartScheduler_Execute(object sender, SimpleActionExecuteEventArgs e)
         {
@@ -72,12 +82,20 @@ namespace XafBlazorQuartz2.Module.Blazor.Controllers
                 await Service.StartAsync(new System.Threading.CancellationToken());
 
 
+            RestartScheduler.Enabled.SetItemValue("Visible", Service.Started);
+            startScheduler.Enabled.SetItemValue("Visible", !Service.Started);
+            stopScheduler.Enabled.SetItemValue("Visible", Service.Started);
         }
 
 
         protected override void OnActivated()
         {
             base.OnActivated();
+            IServiceProvider serviceProvider = ((BlazorApplication)Application).ServiceProvider;
+            var Service = serviceProvider.GetService<XafQuartzHostedService>();
+            RestartScheduler.Enabled.SetItemValue("Visible", Service.Started);
+            startScheduler.Enabled.SetItemValue("Visible", !Service.Started);
+            stopScheduler.Enabled.SetItemValue("Visible", Service.Started);
             // Perform various tasks depending on the target View.
         }
         protected override void OnViewControlsCreated()

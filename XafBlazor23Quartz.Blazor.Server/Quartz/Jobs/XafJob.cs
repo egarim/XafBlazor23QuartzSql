@@ -2,6 +2,7 @@
 using DevExpress.ExpressApp;
 using DevExpress.ExpressApp.Xpo;
 using DevExpress.Xpo;
+using DevExpress.Xpo.DB.Helpers;
 using Microsoft.Extensions.Logging;
 using Quartz;
 
@@ -36,9 +37,9 @@ namespace XafBlazor23Quartz.Blazor.Server.Quartz.Jobs
             var dataMap = context.JobDetail.JobDataMap;
             var Oid = dataMap.GetGuid("Oid");
             cnx = dataMap.GetString("cnx");
-           
-
-
+            var csp = new ConnectionStringParser(cnx);
+            csp.AddPart("Password", "ABCD1234!");
+            cnx = csp.GetConnectionString();
 
             XpoTypesInfoHelper.GetXpoTypeInfoSource();
             XafTypesInfo.Instance.RegisterEntity(typeof(ScheduleTask));
