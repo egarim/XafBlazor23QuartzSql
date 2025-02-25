@@ -52,6 +52,7 @@ public class Startup {
                     if(Configuration.GetConnectionString("ConnectionString") != null) {
                         connectionString = Configuration.GetConnectionString("ConnectionString");
                     }
+                    
 #if EASYTEST
                     if(Configuration.GetConnectionString("EasyTestConnectionString") != null) {
                         connectionString = Configuration.GetConnectionString("EasyTestConnectionString");
@@ -109,10 +110,13 @@ public class Startup {
 
         ////TODO register Jobs
         services.AddSingleton<XafJob>();
-       
-        //services.AddSingleton(new JobSchedule(
-        //    jobType: typeof(XafJob),
-        //    cronExpression: "0/5 * * * * ?")); // run every 5 seconds
+
+
+
+        JobSchedule implementationInstance = new(
+            typeof(XafJob),
+            "0/5 * * * * ?", TriggerType.CronExpression);
+        services.AddSingleton(implementationInstance); // run every 5 seconds
 
     }
 

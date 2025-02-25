@@ -1,14 +1,16 @@
-﻿using System.ComponentModel;
-using DevExpress.ExpressApp;
-using DevExpress.ExpressApp.DC;
-using DevExpress.ExpressApp.Model;
-using DevExpress.ExpressApp.Editors;
+﻿using DevExpress.ExpressApp;
 using DevExpress.ExpressApp.Actions;
-using DevExpress.ExpressApp.Updating;
+using DevExpress.ExpressApp.DC;
+using DevExpress.ExpressApp.Editors;
+using DevExpress.ExpressApp.Model;
 using DevExpress.ExpressApp.Model.Core;
 using DevExpress.ExpressApp.Model.DomainLogics;
 using DevExpress.ExpressApp.Model.NodeGenerators;
+using DevExpress.ExpressApp.Updating;
 using DevExpress.Persistent.BaseImpl;
+using System.ComponentModel;
+using XafBlazor23Quartz.Module.BusinessObjects;
+using XafBlazorQuartzHostedService.Module.Blazor.Quartz;
 
 namespace XafBlazor23Quartz.Blazor.Server;
 
@@ -34,5 +36,32 @@ public sealed class XafBlazor23QuartzBlazorModule : ModuleBase {
         // For more information, refer to the following topic: https://docs.devexpress.com/eXpressAppFramework/113698/
         //application.CreateCustomModelDifferenceStore += Application_CreateCustomModelDifferenceStore;
         application.CreateCustomUserModelDifferenceStore += Application_CreateCustomUserModelDifferenceStore;
+        application.SetupComplete += Application_SetupComplete;
+    }
+    private void Application_SetupComplete(object sender, EventArgs e)
+    {
+        Application.ObjectSpaceCreated += Application_ObjectSpaceCreated;
+    }
+    private void Application_ObjectSpaceCreated(object sender, ObjectSpaceCreatedEventArgs e)
+    {
+        var nonPersistentObjectSpace = e.ObjectSpace as NonPersistentObjectSpace;
+        if (nonPersistentObjectSpace != null)
+        {
+            nonPersistentObjectSpace.ObjectsGetting += ObjectSpace_ObjectsGetting;
+        }
+    }
+    private void ObjectSpace_ObjectsGetting(Object sender, ObjectsGettingEventArgs e)
+    {
+        if (e.ObjectType == typeof(JobStatus))
+        {
+            var Jobs=this.Application.ServiceProvider.GetService<XafQuartzHostedService>().GetJobStatus(default).Result;
+            BindingList<JobStatus> objects = new BindingList<JobStatus>();
+            foreach (var job in Jobs)
+            {
+                objects.Add(job);
+            }
+           
+            e.Objects = objects;
+        }
     }
 }

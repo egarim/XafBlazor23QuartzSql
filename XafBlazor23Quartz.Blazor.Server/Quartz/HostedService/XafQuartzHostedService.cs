@@ -4,6 +4,7 @@ using DevExpress.ExpressApp.Xpo;
 using DevExpress.Xpo;
 using Microsoft.Extensions.Hosting;
 using Quartz;
+using Quartz.Impl.Matchers;
 using Quartz.Spi;
 using System;
 using System.Collections.Generic;
@@ -26,7 +27,41 @@ namespace XafBlazorQuartzHostedService.Module.Blazor.Quartz
         private readonly IJobFactory _jobFactory;
         private readonly IQuartzObjectSpaceService _objectSpaceService;
 
+        public async Task<List<JobStatus>> GetJobStatus(CancellationToken cancellationToken = default)
+        {
+            var result = new List<JobStatus>();
 
+            if (Scheduler != null)
+            {
+                var jobGroups = await Scheduler.GetJobGroupNames(cancellationToken);
+
+                foreach (var group in jobGroups)
+                {
+                    var groupMatcher = GroupMatcher<JobKey>.GroupEquals(group);
+                    var jobKeys = await Scheduler.GetJobKeys(groupMatcher, cancellationToken);
+
+                    foreach (var jobKey in jobKeys)
+                    {
+                        var detail = await Scheduler.GetJobDetail(jobKey, cancellationToken);
+                        var triggers = await Scheduler.GetTriggersOfJob(jobKey, cancellationToken);
+                        var trigger = triggers.FirstOrDefault();
+
+                        var state = await Scheduler.GetTriggerState(trigger.Key, cancellationToken);
+
+                        result.Add(new JobStatus
+                        {
+                            JobName = jobKey.Name,
+                            JobGroup = jobKey.Group,
+                            LastFireTime = trigger?.GetPreviousFireTimeUtc()?.LocalDateTime,
+                            NextFireTime = trigger?.GetNextFireTimeUtc()?.LocalDateTime,
+                            TriggerState = state.ToString()
+                        });
+                    }
+                }
+            }
+
+            return result;
+        }
         public XafQuartzHostedService(
             ISchedulerFactory schedulerFactory,
             IJobFactory jobFactory,
