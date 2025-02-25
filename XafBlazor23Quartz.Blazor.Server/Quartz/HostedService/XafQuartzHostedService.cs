@@ -26,13 +26,21 @@ namespace XafBlazorQuartzHostedService.Module.Blazor.Quartz
         private readonly ISchedulerFactory _schedulerFactory;
         private readonly IJobFactory _jobFactory;
         private readonly IQuartzObjectSpaceService _objectSpaceService;
+        public async Task<bool> IsJobRunning(string jobId, CancellationToken cancellationToken = default)
+        {
+            if (Scheduler == null)
+                return false;
 
+            var executingJobs = await Scheduler.GetCurrentlyExecutingJobs(cancellationToken);
+            return executingJobs.Any(job => job.JobDetail.Key.Name == jobId);
+        }
         public async Task<List<JobStatus>> GetJobStatus(CancellationToken cancellationToken = default)
         {
             var result = new List<JobStatus>();
 
             if (Scheduler != null)
             {
+                var executingJobs = await Scheduler.GetCurrentlyExecutingJobs(cancellationToken);
                 var jobGroups = await Scheduler.GetJobGroupNames(cancellationToken);
 
                 foreach (var group in jobGroups)
@@ -45,8 +53,10 @@ namespace XafBlazorQuartzHostedService.Module.Blazor.Quartz
                         var detail = await Scheduler.GetJobDetail(jobKey, cancellationToken);
                         var triggers = await Scheduler.GetTriggersOfJob(jobKey, cancellationToken);
                         var trigger = triggers.FirstOrDefault();
-
                         var state = await Scheduler.GetTriggerState(trigger.Key, cancellationToken);
+
+                        // Check if this job is currently executing
+                        var isRunning = executingJobs.Any(j => j.JobDetail.Key.Equals(jobKey));
 
                         result.Add(new JobStatus
                         {
@@ -54,7 +64,7 @@ namespace XafBlazorQuartzHostedService.Module.Blazor.Quartz
                             JobGroup = jobKey.Group,
                             LastFireTime = trigger?.GetPreviousFireTimeUtc()?.LocalDateTime,
                             NextFireTime = trigger?.GetNextFireTimeUtc()?.LocalDateTime,
-                            TriggerState = state.ToString()
+                            TriggerState = isRunning ? "RUNNING" : state.ToString()
                         });
                     }
                 }

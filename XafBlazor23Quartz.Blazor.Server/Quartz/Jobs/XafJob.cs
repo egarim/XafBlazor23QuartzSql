@@ -32,7 +32,7 @@ namespace XafBlazor23Quartz.Blazor.Server.Quartz.Jobs
         public virtual Task Execute(IJobExecutionContext context)
         {
             
-
+            System.Threading.Thread.Sleep(15000);
 
             var dataMap = context.JobDetail.JobDataMap;
             var Oid = dataMap.GetGuid("Oid");

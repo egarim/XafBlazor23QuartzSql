@@ -21,5 +21,6 @@ namespace XafBlazor23Quartz.Module.BusinessObjects
         [ModelDefault("DisplayFormat", "G")]
         public DateTime? NextFireTime { get; set; }
         public string TriggerState { get; set; }
+        public bool IsRunning => TriggerState == "RUNNING";
     }
 }
