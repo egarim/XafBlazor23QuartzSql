@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net9.0</TargetFramework>
     <CheckEolTargetFramework>false</CheckEolTargetFramework>
     <Deterministic>false</Deterministic>
     <AssemblyVersion>1.0.*</AssemblyVersion>
@@ -17,15 +17,15 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="CronExpressionDescriptor" Version="2.21.0" />
-    <PackageReference Include="DevExpress.ExpressApp" Version="23.1.5" />
-    <PackageReference Include="DevExpress.ExpressApp.CloneObject.Xpo" Version="23.1.5" />
-    <PackageReference Include="DevExpress.ExpressApp.ConditionalAppearance" Version="23.1.5" />
-    <PackageReference Include="DevExpress.ExpressApp.Objects" Version="23.1.5" />
-    <PackageReference Include="DevExpress.ExpressApp.Security.Xpo" Version="23.1.5" />
-    <PackageReference Include="DevExpress.ExpressApp.Validation" Version="23.1.5" />
-    <PackageReference Include="DevExpress.ExpressApp.Xpo" Version="23.1.5" />
-    <PackageReference Include="DevExpress.Persistent.Base" Version="23.1.5" />
-    <PackageReference Include="DevExpress.Persistent.BaseImpl.Xpo" Version="23.1.5" />
+    <PackageReference Include="DevExpress.ExpressApp" Version="24.2.3" />
+    <PackageReference Include="DevExpress.ExpressApp.CloneObject.Xpo" Version="24.2.3" />
+    <PackageReference Include="DevExpress.ExpressApp.ConditionalAppearance" Version="24.2.3" />
+    <PackageReference Include="DevExpress.ExpressApp.Objects" Version="24.2.3" />
+    <PackageReference Include="DevExpress.ExpressApp.Security.Xpo" Version="24.2.3" />
+    <PackageReference Include="DevExpress.ExpressApp.Validation" Version="24.2.3" />
+    <PackageReference Include="DevExpress.ExpressApp.Xpo" Version="24.2.3" />
+    <PackageReference Include="DevExpress.Persistent.Base" Version="24.2.3" />
+    <PackageReference Include="DevExpress.Persistent.BaseImpl.Xpo" Version="24.2.3" />
     <PackageReference Include="Quartz" Version="3.7.0" />
     <PackageReference Include="Quartz.Extensions.DependencyInjection" Version="3.7.0" />
   </ItemGroup>
